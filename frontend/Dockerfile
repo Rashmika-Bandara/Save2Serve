@@ -1,5 +1,5 @@
-
-FROM node:18 as build
+# Multi-stage build for React frontend
+FROM node:18-alpine as build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
 # Copy all frontend files
 COPY . .
@@ -21,8 +21,23 @@ FROM nginx:alpine
 # Copy built files from build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy nginx configuration (optional - if you need custom config)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create a custom nginx configuration
+RUN echo 'server { \
+    listen 80; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
+        try_files $uri $uri/ /index.html; \
+    } \
+    location /api/ { \
+        proxy_pass http://backend:4000; \
+        proxy_http_version 1.1; \
+        proxy_set_header Upgrade $http_upgrade; \
+        proxy_set_header Connection "upgrade"; \
+        proxy_set_header Host $host; \
+        proxy_cache_bypass $http_upgrade; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

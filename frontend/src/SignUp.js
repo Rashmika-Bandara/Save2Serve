@@ -182,7 +182,7 @@ function SignUp() {
               <div className="form-group">
                 <label htmlFor="role" className="form-label">I want to</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">🎭</span>
+                  <span className="input-icon">👥</span>
                   <select
                     id="role"
                     className="modern-input"

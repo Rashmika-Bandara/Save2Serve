@@ -20,7 +20,16 @@ function Login() {
       const res = await axios.post('http://localhost:4000/api/auth/login', form);
       setMessage('Login successful!');
       localStorage.setItem('token', res.data.token);
-      setTimeout(() => navigate('/'), 1000);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      
+      // Redirect based on role
+      setTimeout(() => {
+        if (res.data.user.role === 'Seller') {
+          navigate('/seller-dashboard');
+        } else {
+          navigate('/buyer-dashboard');
+        }
+      }, 1000);
     } catch (err) {
       setMessage(err.response?.data?.message || 'Error occurred');
     } finally {
