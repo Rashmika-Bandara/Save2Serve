@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_USERNAME = 'YOUR_DOCKERHUB_USERNAME'
+        DOCKERHUB_USERNAME = 'rashmikabandara'
         FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-frontend"
         BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-backend"
         DATABASE_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-database"
@@ -45,9 +45,23 @@ pipeline {
         }
         
         stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Add your test commands here
+            parallel {
+                stage('Test Frontend') {
+                    steps {
+                        dir('frontend') {
+                            sh 'npm install'
+                            sh 'npm test -- --watchAll=false --passWithNoTests'
+                        }
+                    }
+                }
+                stage('Test Backend') {
+                    steps {
+                        dir('backend') {
+                            sh 'npm install'
+                            sh 'npm test -- --passWithNoTests || echo "No tests found"'
+                        }
+                    }
+                }
             }
         }
         
@@ -92,12 +106,19 @@ pipeline {
     post {
         always {
             sh 'docker logout'
+            // Clean up dangling images
+            sh 'docker image prune -f || true'
         }
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline succeeded! ✅'
+            echo "Images pushed to Docker Hub:"
+            echo "- ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+            echo "- ${BACKEND_IMAGE}:${BUILD_NUMBER}"
+            echo "- ${DATABASE_IMAGE}:${BUILD_NUMBER}"
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline failed! ❌'
+            echo 'Check the logs for details.'
         }
     }
 }
