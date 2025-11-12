@@ -30,7 +30,7 @@ services:
     networks:
       - save2serve-network
     volumes:
-      - ./backend/uploads:/usr/src/app/uploads
+      - backend_uploads:/usr/src/app/uploads
     restart: unless-stopped
 
   # Frontend React App
@@ -51,5 +51,7 @@ networks:
 
 volumes:
   mongo_data:
+    driver: local
+  backend_uploads:
     driver: local
 
