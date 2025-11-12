@@ -1,35 +1,55 @@
 version: '3.8'
 
 services:
+  # MongoDB Database
+  mongo:
+    image: save2serve_database:latest
+    container_name: save2serve-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=Save2Serve
+    networks:
+      - save2serve-network
+    restart: unless-stopped
+
+  # Backend API
   backend:
-    build: ./backend
+    image: save2serve_backend:latest
     container_name: save2serve-backend
     ports:
       - "4000:4000"
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://mongo:27017/Save2Serve
+      - PORT=4000
     depends_on:
       - mongo
+    networks:
+      - save2serve-network
+    volumes:
+      - ./backend/uploads:/usr/src/app/uploads
+    restart: unless-stopped
 
+  # Frontend React App
   frontend:
-    build: ./frontend
+    image: save2serve_frontend:latest
     container_name: save2serve-frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
+    networks:
+      - save2serve-network
+    restart: unless-stopped
 
-  mongo:
-    image: mongo:6
-    container_name: save2serve-mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d
-    environment:
-      - MONGO_INITDB_DATABASE=Save2Serve
+networks:
+  save2serve-network:
+    driver: bridge
 
 volumes:
   mongo_data:
+    driver: local
+
