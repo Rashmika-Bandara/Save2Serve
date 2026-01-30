@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from './config';
 import './Dashboard.css';
 
 function BuyerDashboard() {
@@ -44,7 +45,7 @@ function BuyerDashboard() {
 
   const loadListings = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/api/food/listings');
+      const res = await axios.get(`${API_BASE_URL}/api/food/listings`);
       setListings(res.data);
     } catch (err) {
       console.error('Error loading listings:', err);
@@ -54,7 +55,7 @@ function BuyerDashboard() {
   const loadMyRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/food/buyer/requests', {
+      const res = await axios.get(`${API_BASE_URL}/api/food/buyer/requests`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMyRequests(res.data);
@@ -89,7 +90,7 @@ function BuyerDashboard() {
   const submitRequest = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:4000/api/food/requests', {
+      await axios.post(`${API_BASE_URL}/api/food/requests`, {
         foodId: selectedListing._id,
         sellerId: selectedListing.sellerId,
         buyerName: user.goodName,
@@ -121,7 +122,7 @@ function BuyerDashboard() {
   const submitFeedback = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:4000/api/food/feedback', {
+      await axios.post(`${API_BASE_URL}/api/food/feedback`, {
         ...feedback,
         buyerName: user.goodName
       }, {

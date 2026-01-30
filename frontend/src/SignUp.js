@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from './config';
 import './Auth.css';
 
 function SignUp() {
@@ -25,7 +26,7 @@ function SignUp() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:4000/api/auth/signup', form);
+      await axios.post(`${API_BASE_URL}/api/auth/signup`, form);
       setMessage('Registration successful! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {

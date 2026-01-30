@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from './config';
 import './Dashboard.css';
 
 function SellerDashboard() {
@@ -46,7 +47,7 @@ function SellerDashboard() {
   const loadMyListings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/food/my-listings', {
+      const res = await axios.get(`${API_BASE_URL}/api/food/my-listings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMyListings(res.data);
@@ -58,7 +59,7 @@ function SellerDashboard() {
   const loadRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/food/seller/requests', {
+      const res = await axios.get(`${API_BASE_URL}/api/food/seller/requests`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRequests(res.data);
@@ -70,7 +71,7 @@ function SellerDashboard() {
   const loadFeedback = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/food/seller/feedback', {
+      const res = await axios.get(`${API_BASE_URL}/api/food/seller/feedback`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFeedback(res.data);
@@ -88,7 +89,7 @@ function SellerDashboard() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:4000/api/food/listings', {
+      await axios.post(`${API_BASE_URL}/api/food/listings`, {
         ...newListing,
         sellerName: user.goodName
       }, {
@@ -118,7 +119,7 @@ function SellerDashboard() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/food/listings/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/food/listings/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Listing deleted successfully!');
@@ -132,7 +133,7 @@ function SellerDashboard() {
   const handleUpdateRequestStatus = async (requestId, status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:4000/api/food/requests/${requestId}`, 
+      await axios.put(`${API_BASE_URL}/api/food/requests/${requestId}`, 
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
