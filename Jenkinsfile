@@ -7,6 +7,8 @@ pipeline {
         FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-frontend"
         BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-backend"
         DATABASE_IMAGE = "${DOCKERHUB_USERNAME}/save2serve-database"
+        AWS_EC2_IP = '44.209.80.166'
+        API_URL = "http://${AWS_EC2_IP}:4000"
     }
     
     stages {
@@ -23,7 +25,7 @@ pipeline {
                 stage('Build Frontend') {
                     steps {
                         dir('frontend') {
-                            sh 'docker build -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} -t ${FRONTEND_IMAGE}:latest .'
+                            sh 'docker build --build-arg REACT_APP_API_URL=${API_URL} -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} -t ${FRONTEND_IMAGE}:latest .'
                         }
                     }
                 }
@@ -94,11 +96,15 @@ pipeline {
             }
         }
         
-        stage('Deploy') {
+        stage('Deploy to AWS') {
             steps {
-                echo 'Deploying application...'
-                sh 'docker-compose down'
-                sh 'docker-compose up -d'
+                echo 'Deploying to AWS EC2...'
+                sshagent(['aws-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${AWS_EC2_IP} \
+                        'cd save2serve && ./manage.sh update'
+                    """
+                }
             }
         }
     }
@@ -115,6 +121,10 @@ pipeline {
             echo "- ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
             echo "- ${BACKEND_IMAGE}:${BUILD_NUMBER}"
             echo "- ${DATABASE_IMAGE}:${BUILD_NUMBER}"
+            echo ''
+            echo 'Deployed to AWS EC2! 🚀'
+            echo "Frontend: http://${AWS_EC2_IP}:3000"
+            echo "Backend: http://${AWS_EC2_IP}:4000"
         }
         failure {
             echo 'Pipeline failed! ❌'
