@@ -72,7 +72,7 @@ function SignUp() {
           </div>
           
           <div className="auth-header">
-            <h2 className="auth-title">Create Account</h2>
+            <h2 className="auth-title">Rashmika</h2>
             <p className="auth-subtitle">Join our community today</p>
           </div>
 
