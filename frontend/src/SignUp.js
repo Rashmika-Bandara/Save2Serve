@@ -46,7 +46,7 @@ function SignUp() {
         <div className="auth-image-overlay"></div>
         <img src="/images/R.jpg" alt="Save2Serve Community" className="auth-bg-image" />
         <div className="auth-image-content">
-          <h1 className="auth-brand-title">Join Save2Serve Today</h1>
+          <h1 className="auth-brand-title">Let's Join Save2Serve</h1>
           <p className="auth-brand-subtitle">Be part of the solution to food waste</p>
           <div className="auth-features">
             <div className="auth-feature">
